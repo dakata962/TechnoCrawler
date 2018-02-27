@@ -8,9 +8,6 @@ const $init = require("jquery");
 
 // var technomarketParser = require('parsers/technomarket-parser');
 
-
-
-
 const getPagesUrlsTechnopolis = async () => {
     const technopolisLink = "http://www.technopolis.bg/bg//%D0%9C%D0%BE%D0%B1%D0%B8%D0%BB%D0%BD%D0%B8-%D1%82%D0%B5%D0%BB%D0%B5%D1%84%D0%BE%D0%BD%D0%B8-%D0%B8-%D0%A2%D0%B0%D0%B1%D0%BB%D0%B5%D1%82%D0%B8/%D0%9C%D0%BE%D0%B1%D0%B8%D0%BB%D0%BD%D0%B8-%D1%82%D0%B5%D0%BB%D0%B5%D1%84%D0%BE%D0%BD%D0%B8/c/P11040101?pricerange=&pageselect=100&page=";
     const dom = await JSDOM.fromURL(technopolisLink + 0);
@@ -41,10 +38,8 @@ const getUrlsTechnoPolis = async () => {
         .value();
 };
 
-//////////////////////////////////////////
-
 const getPagesUrlsTechnoMarket = async () => {
-    const technopolisLink = 'https://www.technomarket.bg/telefoni';
+    const technopolisLink = 'https://www.technomarket.bg/product/filter?filter_form%5Bsort%5D=default&filter_form%5Bprice%5D%5Bmin%5D=39&filter_form%5Bprice%5D%5Bmax%5D=2649&filter_form%5Bspec_gsm_display%5D%5Bmin%5D=&filter_form%5Bspec_gsm_display%5D%5Bmax%5D=&filter_form%5Bspec_gsm_battery%5D%5Bmin%5D=&filter_form%5Bspec_gsm_battery%5D%5Bmax%5D=&filter_key=%2Ftelefoni%7Cstatic%7Cstatic&from=0&size=999';
     const dom = await JSDOM.fromURL(technopolisLink);
     const $ = $init(dom.window);
     const pagesLinks = [...$(".paging a")].map((link) => {
@@ -57,7 +52,6 @@ const getPagesUrlsTechnoMarket = async () => {
 
     return [technopolisLink, ...pagesLinks];
 };
-
 
 const getUrlsTechnoMarket = async () => {
     const pageUrls = await getPagesUrlsTechnoMarket();
@@ -74,21 +68,16 @@ const getUrlsTechnoMarket = async () => {
         .value();
 };
 
-
-// const runTehnoMarket = async () => {
-//     urlsTechnoMarket = await getUrlsTechnoMarket();
-//     console.log(urlsTechnoMarket);
-// };
-
-
 let resultUrlsTechnoMarket;
 let runTehnoMarket = Promise.resolve(getUrlsTechnoMarket());
 runTehnoMarket.then((value) => {
     resultUrlsTechnoMarket = value;
+}).then(() => {
+    console.log(resultUrlsTechnoMarket)
 })
 
 
-// result
+// TechnoPolis
 
 
 let resultUrlsTechnoPolis;
@@ -97,6 +86,7 @@ let runTehnoPolis = Promise.resolve(getUrlsTechnoPolis());
 runTehnoPolis.then((value) => {
     resultUrlsTechnoPolis = value;
 }).then(() => {
-    console.log(resultUrlsTechnoPolis)
+    // console.log(resultUrlsTechnoPolis)
+    
 })
 
