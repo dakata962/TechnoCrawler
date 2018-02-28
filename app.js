@@ -4,6 +4,8 @@ const {
 
 const _ = require("lodash");
 
+const fs = require('fs');
+
 const $init = require("jquery");
 
 // var technomarketParser = require('parsers/technomarket-parser');
@@ -68,25 +70,99 @@ const getUrlsTechnoMarket = async () => {
         .value();
 };
 
-let resultUrlsTechnoMarket;
-let runTehnoMarket = Promise.resolve(getUrlsTechnoMarket());
-runTehnoMarket.then((value) => {
-    resultUrlsTechnoMarket = value;
-}).then(() => {
-    console.log(resultUrlsTechnoMarket)
-})
+
+
+
+
+let runTehnoMarket = async () => {
+    const getMake = (urlOfphone) => {
+        const getPosition = (string, subString, index) => {
+            return string.split(subString, index).join(subString).length;
+        }
+
+        urlOfphone = urlOfphone.substring(37);
+
+        let make;
+        let model;
+        if (urlOfphone.startsWith('apple')) {
+            make = urlOfphone.substring(0, getPosition(urlOfphone, '-', 2));
+            urlOfphone = urlOfphone.substring(getPosition(urlOfphone, '-', 2) + 1);
+            model = urlOfphone.substring(0, urlOfphone.lastIndexOf('-'))
+
+        } else {
+            make = urlOfphone.substring(0, getPosition(urlOfphone, '-', 1));
+            urlOfphone = urlOfphone.substring(getPosition(urlOfphone, '-', 1) + 1);
+            model = urlOfphone.substring(0, urlOfphone.lastIndexOf('-'))
+        }
+        return make;
+    }
+
+    const getModel = (urlOfphone) => {
+        const getPosition = (string, subString, index) => {
+            return string.split(subString, index).join(subString).length;
+        }
+
+        urlOfphone = urlOfphone.substring(37);
+
+        let make;
+        let model;
+        if (urlOfphone.startsWith('apple')) {
+            make = urlOfphone.substring(0, getPosition(urlOfphone, '-', 2));
+            urlOfphone = urlOfphone.substring(getPosition(urlOfphone, '-', 2) + 1);
+            model = urlOfphone.substring(0, urlOfphone.lastIndexOf('-'))
+
+        } else {
+            make = urlOfphone.substring(0, getPosition(urlOfphone, '-', 1));
+            urlOfphone = urlOfphone.substring(getPosition(urlOfphone, '-', 1) + 1);
+            model = urlOfphone.substring(0, urlOfphone.lastIndexOf('-'))
+        }
+        return model;
+    }
+
+    let resultUrlsTechnoMarket = await getUrlsTechnoMarket();
+    let arr = [];
+
+    const currentPhone = async (currentUrl) => {
+        let phone = {};
+        let url = 'https://www.technomarket.bg' + currentUrl;
+        const dom = await JSDOM.fromURL(url);
+        const $ = $init(dom.window);
+        const classWithInfo = $(".product-description li").text();
+        // console.log(classWithInfo)
+        const model = getModel(url);
+        const make = getMake(url);
+        let gb;
+        if (classWithInfo.includes('ПАМЕТ: '))
+            gb = classWithInfo.substring(classWithInfo.indexOf('ПАМЕТ: ') + 7, classWithInfo.indexOf('ПАМЕТ: ') + 12);
+        else gb = 'noInfo';
+        let weigth;
+        if (classWithInfo.includes('ТЕГЛО: '))
+            weigth = classWithInfo.substring(classWithInfo.indexOf('ТЕГЛО: ') + 7, classWithInfo.indexOf('ТЕГЛО: ') + 13);
+        else weigth = 'noInfo';
+        phone.gb = gb;
+        phone.weigth = weigth;
+        phone.model = model;
+        phone.make = make;
+        return phone;
+    }
+    const phone = await Promise.all(resultUrlsTechnoMarket.slice(0, 5).map((url) => {
+        return currentPhone(url);
+    }))
+    console.log(phone);
+}
 
 
 // TechnoPolis
 
+let runTehnoPolis = async () => {
+    let resultUrlsTechnoPolis = await getUrlsTechnoPolis();
+    // console.log(resultUrlsTechnoPolis);
+    // fs.appendFile('links.txt', resultUrlsTechnoPolis, function (err) {
+    //     if (err) throw err;
+    //     console.log('Saved!');
+    // });
 
-let resultUrlsTechnoPolis;
-let runTehnoPolis = Promise.resolve(getUrlsTechnoPolis());
 
-runTehnoPolis.then((value) => {
-    resultUrlsTechnoPolis = value;
-}).then(() => {
-    // console.log(resultUrlsTechnoPolis)
-    
-})
-
+};
+runTehnoMarket();
+// runTehnoPolis();
