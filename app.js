@@ -71,98 +71,114 @@ const getUrlsTechnoMarket = async () => {
 };
 
 
+const getMake = (urlOfphone, startIndex) => {
+    const getPosition = (string, subString, index) => {
+        return string.split(subString, index).join(subString).length;
+    }
 
+    //delete the first part of the url
+    urlOfphone = urlOfphone.substring(startIndex);
+
+    let make;
+    if (urlOfphone.startsWith('apple')) {
+        make = urlOfphone.substring(0, getPosition(urlOfphone, '-', 2));
+
+    } else {
+        make = urlOfphone.substring(0, getPosition(urlOfphone, '-', 1));
+    }
+    return make;
+}
+
+const getModel = (urlOfphone, startIndex) => {
+    const getPosition = (string, subString, index) => {
+        return string.split(subString, index).join(subString).length;
+    }
+    //delete the first part of the url
+    urlOfphone = urlOfphone.substring(startIndex);
+    // console.log(urlOfphone);
+
+    let model;
+    if (urlOfphone.startsWith('apple')) {
+        urlOfphone = urlOfphone.substring(getPosition(urlOfphone, '-', 2) + 1);
+        model = urlOfphone.substring(0, urlOfphone.lastIndexOf('-'))
+
+    } else {
+        urlOfphone = urlOfphone.substring(getPosition(urlOfphone, '-', 1) + 1);
+        model = urlOfphone.substring(0, urlOfphone.lastIndexOf('-'))
+    }
+    return model;
+}
 
 
 let runTehnoMarket = async () => {
-    const getMake = (urlOfphone) => {
-        const getPosition = (string, subString, index) => {
-            return string.split(subString, index).join(subString).length;
-        }
-
-        urlOfphone = urlOfphone.substring(37);
-
-        let make;
-        let model;
-        if (urlOfphone.startsWith('apple')) {
-            make = urlOfphone.substring(0, getPosition(urlOfphone, '-', 2));
-            urlOfphone = urlOfphone.substring(getPosition(urlOfphone, '-', 2) + 1);
-            model = urlOfphone.substring(0, urlOfphone.lastIndexOf('-'))
-
-        } else {
-            make = urlOfphone.substring(0, getPosition(urlOfphone, '-', 1));
-            urlOfphone = urlOfphone.substring(getPosition(urlOfphone, '-', 1) + 1);
-            model = urlOfphone.substring(0, urlOfphone.lastIndexOf('-'))
-        }
-        return make;
-    }
-
-    const getModel = (urlOfphone) => {
-        const getPosition = (string, subString, index) => {
-            return string.split(subString, index).join(subString).length;
-        }
-
-        urlOfphone = urlOfphone.substring(37);
-
-        let make;
-        let model;
-        if (urlOfphone.startsWith('apple')) {
-            make = urlOfphone.substring(0, getPosition(urlOfphone, '-', 2));
-            urlOfphone = urlOfphone.substring(getPosition(urlOfphone, '-', 2) + 1);
-            model = urlOfphone.substring(0, urlOfphone.lastIndexOf('-'))
-
-        } else {
-            make = urlOfphone.substring(0, getPosition(urlOfphone, '-', 1));
-            urlOfphone = urlOfphone.substring(getPosition(urlOfphone, '-', 1) + 1);
-            model = urlOfphone.substring(0, urlOfphone.lastIndexOf('-'))
-        }
-        return model;
-    }
 
     let resultUrlsTechnoMarket = await getUrlsTechnoMarket();
-    let arr = [];
 
     const currentPhone = async (currentUrl) => {
-        let phone = {};
         let url = 'https://www.technomarket.bg' + currentUrl;
         const dom = await JSDOM.fromURL(url);
         const $ = $init(dom.window);
-        const classWithInfo = $(".product-description li").text();
+        const classWithInfo = $(".moreLines").text();
         // console.log(classWithInfo)
-        const model = getModel(url);
-        const make = getMake(url);
-        let gb;
+        const model = getModel(url, 37);
+        const make = getMake(url, 37);
+        let gb = 'noInfo';
         if (classWithInfo.includes('ПАМЕТ: '))
-            gb = classWithInfo.substring(classWithInfo.indexOf('ПАМЕТ: ') + 7, classWithInfo.indexOf('ПАМЕТ: ') + 12);
-        else gb = 'noInfo';
-        let weigth;
+            gb = classWithInfo.substring(classWithInfo.indexOf('ПАМЕТ: ') + 7, classWithInfo.indexOf('ПАМЕТ: ') + 10);
+        let weigth = 'noInfo';
         if (classWithInfo.includes('ТЕГЛО: '))
-            weigth = classWithInfo.substring(classWithInfo.indexOf('ТЕГЛО: ') + 7, classWithInfo.indexOf('ТЕГЛО: ') + 13);
-        else weigth = 'noInfo';
-        phone.gb = gb;
-        phone.weigth = weigth;
-        phone.model = model;
-        phone.make = make;
-        return phone;
+            weigth = classWithInfo.substring(classWithInfo.indexOf('ТЕГЛО: ') + 7, classWithInfo.indexOf('ТЕГЛО: ') + 11);
+            return {
+            make,
+            model,
+            gb,
+            weigth,
+        };
     }
-    const phone = await Promise.all(resultUrlsTechnoMarket.slice(0, 5).map((url) => {
+    const ParsedinfoAboutPhones = await Promise.all(resultUrlsTechnoMarket.slice(0, 33).map((url) => {
         return currentPhone(url);
     }))
-    console.log(phone);
+    console.log(ParsedinfoAboutPhones);
 }
-
 
 // TechnoPolis
 
 let runTehnoPolis = async () => {
+
     let resultUrlsTechnoPolis = await getUrlsTechnoPolis();
-    // console.log(resultUrlsTechnoPolis);
-    // fs.appendFile('links.txt', resultUrlsTechnoPolis, function (err) {
-    //     if (err) throw err;
-    //     console.log('Saved!');
-    // });
 
-
+    const currentPhone = async (currentUrl) => {
+        let url = 'http://www.technopolis.bg' + currentUrl;
+        const dom = await JSDOM.fromURL(url);
+        const $ = $init(dom.window);
+        const classWithInfo = $("td").text();
+        let weigth = 'noInfo';
+        if (classWithInfo.includes('ТЕГЛО')) {
+            weigth = classWithInfo.substring(classWithInfo.indexOf('ТЕГЛО') + 5, classWithInfo.indexOf('ТЕГЛО') + 7);
+            if (weigth.startsWith('1') || weigth.startsWith('2')) {
+                weigth = weigth.substring(0, weigth.length - 2);
+            }}
+            let gb = 'noInfo';
+            if (classWithInfo.includes('ПАМЕТ')) {
+                gb = classWithInfo.substring(classWithInfo.indexOf('ПАМЕТ') + 5, classWithInfo.indexOf('ПАМЕТ') + 8);
+                if (gb.includes('НЕ'))
+                    gb = 'noInfo';
+            }
+            let make = getMake(url, 56);
+            let model = getModel(url, 56);
+            return {
+                make,
+                model,
+                gb,
+                weigth,
+            };
+        }
+        const ParsedinfoAboutPhones = await Promise.all(resultUrlsTechnoPolis.slice(0, 33).map((url) => {
+            return currentPhone(url);
+        }))
+        console.log(ParsedinfoAboutPhones);
+    
 };
+
 runTehnoMarket();
-// runTehnoPolis();
+runTehnoPolis();
