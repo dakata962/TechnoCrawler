@@ -11,7 +11,7 @@ const $init = require("jquery");
 // var technomarketParser = require('parsers/technomarket-parser');
 
 const getPagesUrlsTechnopolis = async () => {
-    const technopolisLink = "http://www.technopolis.bg/bg//%D0%9C%D0%BE%D0%B1%D0%B8%D0%BB%D0%BD%D0%B8-%D1%82%D0%B5%D0%BB%D0%B5%D1%84%D0%BE%D0%BD%D0%B8-%D0%B8-%D0%A2%D0%B0%D0%B1%D0%BB%D0%B5%D1%82%D0%B8/%D0%9C%D0%BE%D0%B1%D0%B8%D0%BB%D0%BD%D0%B8-%D1%82%D0%B5%D0%BB%D0%B5%D1%84%D0%BE%D0%BD%D0%B8/c/P11040101?pricerange=909%3B2599&q=%3Aprice-asc&pageselect=100&page=";
+    const technopolisLink = "http://www.technopolis.bg/bg//%D0%9C%D0%BE%D0%B1%D0%B8%D0%BB%D0%BD%D0%B8-%D1%82%D0%B5%D0%BB%D0%B5%D1%84%D0%BE%D0%BD%D0%B8-%D0%B8-%D0%A2%D0%B0%D0%B1%D0%BB%D0%B5%D1%82%D0%B8/%D0%9C%D0%BE%D0%B1%D0%B8%D0%BB%D0%BD%D0%B8-%D1%82%D0%B5%D0%BB%D0%B5%D1%84%D0%BE%D0%BD%D0%B8/c/P11040101?pricerange=909%3B2599&q=%3Aprice-asc&pageselect=50&page=";
     const dom = await JSDOM.fromURL(technopolisLink + 0);
     const $ = $init(dom.window);
     const pagesLinks = [...$(".paging a")].map((link) => {
@@ -40,21 +40,6 @@ const getUrlsTechnoPolis = async () => {
         .value();
 };
 
-const getPagesUrlsTechnoMarket = async () => {
-    const technopolisLink = 'https://www.technomarket.bg/product/filter?filter_form%5Bsort%5D=default&filter_form%5Bprice%5D%5Bmin%5D=39&filter_form%5Bprice%5D%5Bmax%5D=2649&filter_form%5Bspec_gsm_display%5D%5Bmin%5D=&filter_form%5Bspec_gsm_display%5D%5Bmax%5D=&filter_form%5Bspec_gsm_battery%5D%5Bmin%5D=&filter_form%5Bspec_gsm_battery%5D%5Bmax%5D=&filter_key=%2Ftelefoni%7Cstatic%7Cstatic&from=100&size=150';
-    const dom = await JSDOM.fromURL(technopolisLink);
-    const $ = $init(dom.window);
-    const pagesLinks = [...$(".paging a")].map((link) => {
-        const sublink = $(link).attr("href");
-        const fromIndex = sublink.indexOf("&page=") + "&page=".length;
-        const toIndex = sublink.indexOf("&", fromIndex + 1);
-        const page = sublink.substring(fromIndex, toIndex);
-        return technopolisLink;
-    });
-
-    return [technopolisLink, ...pagesLinks];
-};
-
 const getUrlsTechnoMarket = async () => {
     const pageUrls = await getPagesUrlsTechnoMarket();
 
@@ -68,6 +53,21 @@ const getUrlsTechnoMarket = async () => {
         .flatten()
         .sortedUniq()
         .value();
+};
+
+const getPagesUrlsTechnoMarket = async () => {
+    const technopolisLink = 'https://www.technomarket.bg/product/filter?filter_form%5Bsort%5D=default&filter_form%5Bprice%5D%5Bmin%5D=39&filter_form%5Bprice%5D%5Bmax%5D=2649&filter_form%5Bspec_gsm_display%5D%5Bmin%5D=&filter_form%5Bspec_gsm_display%5D%5Bmax%5D=&filter_form%5Bspec_gsm_battery%5D%5Bmin%5D=&filter_form%5Bspec_gsm_battery%5D%5Bmax%5D=&filter_key=%2Ftelefoni%7Cstatic%7Cstatic&from=100&size=200';
+    const dom = await JSDOM.fromURL(technopolisLink);
+    const $ = $init(dom.window);
+    const pagesLinks = [...$(".paging a")].map((link) => {
+        const sublink = $(link).attr("href");
+        const fromIndex = sublink.indexOf("&page=") + "&page=".length;
+        const toIndex = sublink.indexOf("&", fromIndex + 1);
+        const page = sublink.substring(fromIndex, toIndex);
+        return technopolisLink;
+    });
+
+    return [technopolisLink, ...pagesLinks];
 };
 
 
@@ -119,30 +119,23 @@ let runTehnoMarket = async () => {
         const dom = await JSDOM.fromURL(url);
         const $ = $init(dom.window);
         const classWithInfo = $(".moreLines").text();
-        // console.log(classWithInfo)
+        console.log(classWithInfo)
         const model = getModel(url, 37);
         const make = getMake(url, 37);
-
-        let gb = 0;
-        if (classWithInfo.includes('ПАМЕТ: ')) {
+        let gb = 'noInfo';
+        if (classWithInfo.includes('ПАМЕТ: '))
             gb = classWithInfo.substring(classWithInfo.indexOf('ПАМЕТ: ') + 7, classWithInfo.indexOf('ПАМЕТ: ') + 10);
-            gb = gb.replace(/\D/g, '');
-        }
-
-        let weigth = 0;
-        if (classWithInfo.includes('ТЕГЛО: ')){
+        let weigth = 'noInfo';
+        if (classWithInfo.includes('ТЕГЛО: '))
             weigth = classWithInfo.substring(classWithInfo.indexOf('ТЕГЛО: ') + 7, classWithInfo.indexOf('ТЕГЛО: ') + 11);
-            weigth = weigth.replace(/\D/g, '');
-        }
-
-        return {
+            return {
             make,
             model,
             gb,
             weigth,
         };
     }
-    const ParsedinfoAboutPhones = await Promise.all(resultUrlsTechnoMarket.slice(0, 25).map((url) => {
+    const ParsedinfoAboutPhones = await Promise.all(resultUrlsTechnoMarket.slice(0, 50).map((url) => {
         return currentPhone(url);
     }))
     console.log(ParsedinfoAboutPhones);
@@ -159,31 +152,32 @@ let runTehnoPolis = async () => {
         const dom = await JSDOM.fromURL(url);
         const $ = $init(dom.window);
         const classWithInfo = $("td").text();
-        let weigth = 0;
-        if (classWithInfo.includes('ТЕГЛО')){
-            weigth = classWithInfo.substring(classWithInfo.indexOf('ТЕГЛО') + 5, classWithInfo.indexOf('ТЕГЛО') + 8)
-            weight = weigth.replace(/\D/g, '');
+        let weigth = 'noInfo';
+        if (classWithInfo.includes('ТЕГЛО')) {
+            weigth = classWithInfo.substring(classWithInfo.indexOf('ТЕГЛО') + 5, classWithInfo.indexOf('ТЕГЛО') + 7);
+            if (weigth.startsWith('1') || weigth.startsWith('2')) {
+                weigth = weigth.substring(0, weigth.length - 2);
+            }}
+            let gb = 'noInfo';
+            if (classWithInfo.includes('ПАМЕТ')) {
+                gb = classWithInfo.substring(classWithInfo.indexOf('ПАМЕТ') + 5, classWithInfo.indexOf('ПАМЕТ') + 8);
+                if (gb.includes('НЕ'))
+                    gb = 'noInfo';
+            }
+            let make = getMake(url, 56);
+            let model = getModel(url, 56);
+            return {
+                make,
+                model,
+                gb,
+                weigth,
+            };
         }
-        let gb = 0;
-        if (classWithInfo.includes('ПАМЕТ')) {
-            gb = classWithInfo.substring(classWithInfo.indexOf('ПАМЕТ') + 5, classWithInfo.indexOf('ПАМЕТ') + 8);
-            if (gb.includes('НЕ'))
-                gb = 0;
-        }
-        let make = getMake(url, 56);
-        let model = getModel(url, 56);
-        return {
-            make,
-            model,
-            gb,
-            weigth,
-        };
-    }
-    const ParsedinfoAboutPhones = await Promise.all(resultUrlsTechnoPolis.slice(0, 25).map((url) => {
-        return currentPhone(url);
-    }))
-    console.log(ParsedinfoAboutPhones);
-
+        const ParsedinfoAboutPhones = await Promise.all(resultUrlsTechnoPolis.slice(0, 50).map((url) => {
+            return currentPhone(url);
+        }))
+        console.log(ParsedinfoAboutPhones);
+    
 };
 
 runTehnoMarket();
