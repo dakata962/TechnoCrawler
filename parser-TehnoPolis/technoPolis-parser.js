@@ -49,7 +49,7 @@ let runTehnoPolis = async () => {
         let chunkOfFive = resultUrlsTechnoPolis.splice(0, 5);
 
         if (chunkOfFive.length === 0) {
-            return chunkOfFive;
+            return phoneArrObeject;
         }
 
         phoneArrObeject.push(await Promise.all(chunkOfFive.map((url) => {
@@ -80,23 +80,24 @@ let runTehnoPolis = async () => {
         let make = getMake(url, 56);
         let model = getModel(url, 56);
 
-        console.log({
-            make,
-            model,
-            gb,
-            weigth,
-        });
+        // console.log({
+        //     make,
+        //     model,
+        //     gb,
+        //     weigth,
+        // });
 
         return {
             make,
             model,
             gb,
             weigth,
+            site:'technoPolis',
         };
     }
 
-    chunkRequests([]);
-    // return chunkRequests([]);
+    // chunkRequests([]);
+    return chunkRequests([]);
 };
 
 module.exports = {

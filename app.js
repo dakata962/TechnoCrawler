@@ -6,7 +6,19 @@ const {
     runTehnoMarket
 } = require('./parser-TechnoMarket/technoMarket-parser.js');
 
+const main = async () => {
+    let arrObjTechnoMarket = await runTehnoMarket();
 
-runTehnoMarket();
-runTehnoPolis();
+    arrObjTechnoMarket.forEach((element) => {
+        element.forEach((el) => {
+            console.log(el);
+            console.log('-'.repeat(30))
+        })
+    });
 
+    // let arrObjTechnoPolis= await runTehnoPolis();
+    //foreach .. 
+    //cykai bazata
+}
+
+main();

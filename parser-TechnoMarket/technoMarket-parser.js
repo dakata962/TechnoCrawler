@@ -47,9 +47,9 @@ let runTehnoMarket = async () => {
 
     const chunkRequests = async (phoneArrObeject) => {
         let chunkOfFive = resultUrlsTechnoMarket.splice(0, 5);
-
+        
         if (chunkOfFive.length === 0){
-            return chunkOfFive;
+            return phoneArrObeject;
         }
 
         phoneArrObeject.push(await Promise.all(chunkOfFive.map((url) => {
@@ -79,23 +79,24 @@ let runTehnoMarket = async () => {
             weigth = classWithInfo.substring(classWithInfo.indexOf('ТЕГЛО: ') + 7, classWithInfo.indexOf('ТЕГЛО: ') + 11);
             weigth = weigth.replace(/\D/g, '').trim();
         }
-        console.log({
-            make,
-            model,
-            gb,
-            weigth,
-        });
+        // console.log({
+        //     make,
+        //     model,
+        //     gb,
+        //     weigth,
+        // });
 
         return {
             make,
             model,
             gb,
             weigth,
+            site:'technoMarket',
         };
     }
     
-    chunkRequests([]);
-    // return chunkRequests([]);
+    // console.log( chunkRequests([]));
+    return chunkRequests([]);
 }
 
 module.exports = {
