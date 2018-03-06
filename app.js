@@ -4,7 +4,9 @@ const {
 
 const _ = require("lodash");
 
-const fs = require('fs');
+const async = require("async");
+
+// const fs = require('fs');
 
 const $init = require("jquery");
 
@@ -114,6 +116,20 @@ let runTehnoMarket = async () => {
 
     let resultUrlsTechnoMarket = await getUrlsTechnoMarket();
 
+    const chunkRequests = async (phoneArrObeject) => {
+        let chunkOfFive = resultUrlsTechnoMarket.splice(0, 5);
+
+        if (chunkOfFive.length === 0){
+            return chunkOfFive;
+        }
+
+        phoneArrObeject.push(await Promise.all(chunkOfFive.map((url) => {
+            return currentPhone(url);
+        })));
+
+        return chunkRequests(phoneArrObeject);
+    }
+
     const currentPhone = async (currentUrl) => {
         let url = 'https://www.technomarket.bg' + currentUrl;
         const dom = await JSDOM.fromURL(url);
@@ -123,17 +139,23 @@ let runTehnoMarket = async () => {
         const model = getModel(url, 37);
         const make = getMake(url, 37);
 
-        let gb = 0;
+        let gb = '0';
         if (classWithInfo.includes('ПАМЕТ: ')) {
             gb = classWithInfo.substring(classWithInfo.indexOf('ПАМЕТ: ') + 7, classWithInfo.indexOf('ПАМЕТ: ') + 10);
             gb = gb.replace(/\D/g, '');
         }
 
-        let weigth = 0;
-        if (classWithInfo.includes('ТЕГЛО: ')){
+        let weigth = '0';
+        if (classWithInfo.includes('ТЕГЛО: ')) {
             weigth = classWithInfo.substring(classWithInfo.indexOf('ТЕГЛО: ') + 7, classWithInfo.indexOf('ТЕГЛО: ') + 11);
             weigth = weigth.replace(/\D/g, '');
         }
+        console.log({
+            make,
+            model,
+            gb,
+            weigth,
+        });
 
         return {
             make,
@@ -142,10 +164,9 @@ let runTehnoMarket = async () => {
             weigth,
         };
     }
-    const ParsedinfoAboutPhones = await Promise.all(resultUrlsTechnoMarket.slice(0, 25).map((url) => {
-        return currentPhone(url);
-    }))
-    console.log(ParsedinfoAboutPhones);
+    
+    chunkRequests([]);
+    // return chunkRequests([]);
 }
 
 // TechnoPolis
@@ -154,24 +175,46 @@ let runTehnoPolis = async () => {
 
     let resultUrlsTechnoPolis = await getUrlsTechnoPolis();
 
+    const chunkRequests = async (phoneArrObeject) => {
+        let chunkOfFive = resultUrlsTechnoPolis.splice(0, 5);
+
+        if (chunkOfFive.length === 0){
+            return chunkOfFive;
+        }
+
+        phoneArrObeject.push(await Promise.all(chunkOfFive.map((url) => {
+            return currentPhone(url);
+        })));
+
+        return chunkRequests(phoneArrObeject);
+    }
+
     const currentPhone = async (currentUrl) => {
         let url = 'http://www.technopolis.bg' + currentUrl;
         const dom = await JSDOM.fromURL(url);
         const $ = $init(dom.window);
         const classWithInfo = $("td").text();
         let weigth = 0;
-        if (classWithInfo.includes('ТЕГЛО')){
+        if (classWithInfo.includes('ТЕГЛО')) {
             weigth = classWithInfo.substring(classWithInfo.indexOf('ТЕГЛО') + 5, classWithInfo.indexOf('ТЕГЛО') + 8)
             weight = weigth.replace(/\D/g, '');
         }
-        let gb = 0;
+        let gb = '0';
         if (classWithInfo.includes('ПАМЕТ')) {
             gb = classWithInfo.substring(classWithInfo.indexOf('ПАМЕТ') + 5, classWithInfo.indexOf('ПАМЕТ') + 8);
             if (gb.includes('НЕ'))
-                gb = 0;
+                gb = '0';
         }
         let make = getMake(url, 56);
         let model = getModel(url, 56);
+
+        console.log({
+            make,
+            model,
+            gb,
+            weigth,
+        });
+
         return {
             make,
             model,
@@ -179,12 +222,23 @@ let runTehnoPolis = async () => {
             weigth,
         };
     }
-    const ParsedinfoAboutPhones = await Promise.all(resultUrlsTechnoPolis.slice(0, 25).map((url) => {
-        return currentPhone(url);
-    }))
-    console.log(ParsedinfoAboutPhones);
-
+    
+    chunkRequests([]);
+    // return chunkRequests([]);
 };
 
-runTehnoMarket();
+
 runTehnoPolis();
+runTehnoMarket();
+
+
+// module.exports = {
+//     runTehnoMarket,
+//     runTehnoPolis,
+// };
+
+
+// const {
+//     runTehnoMarket,
+//     runTehnoPolis,
+// } = require('./app.js');
