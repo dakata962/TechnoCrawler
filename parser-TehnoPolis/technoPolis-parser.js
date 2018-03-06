@@ -48,7 +48,7 @@ let runTehnoPolis = async () => {
     const chunkRequests = async (phoneArrObeject) => {
         let chunkOfFive = resultUrlsTechnoPolis.splice(0, 5);
 
-        if (chunkOfFive.length === 0){
+        if (chunkOfFive.length === 0) {
             return chunkOfFive;
         }
 
@@ -64,14 +64,16 @@ let runTehnoPolis = async () => {
         const dom = await JSDOM.fromURL(url);
         const $ = $init(dom.window);
         const classWithInfo = $("td").text();
-        let weigth = 0;
+        let weigth = '0';
         if (classWithInfo.includes('ТЕГЛО')) {
             weigth = classWithInfo.substring(classWithInfo.indexOf('ТЕГЛО') + 5, classWithInfo.indexOf('ТЕГЛО') + 8)
+            weigth = weigth.trim();
             weight = weigth.replace(/\D/g, '');
         }
         let gb = '0';
         if (classWithInfo.includes('ПАМЕТ')) {
             gb = classWithInfo.substring(classWithInfo.indexOf('ПАМЕТ') + 5, classWithInfo.indexOf('ПАМЕТ') + 8);
+            gb = gb.trim();
             if (gb.includes('НЕ'))
                 gb = '0';
         }
@@ -92,7 +94,7 @@ let runTehnoPolis = async () => {
             weigth,
         };
     }
-    
+
     chunkRequests([]);
     // return chunkRequests([]);
 };

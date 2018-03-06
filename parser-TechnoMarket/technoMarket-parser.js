@@ -71,13 +71,13 @@ let runTehnoMarket = async () => {
         let gb = '0';
         if (classWithInfo.includes('ПАМЕТ: ')) {
             gb = classWithInfo.substring(classWithInfo.indexOf('ПАМЕТ: ') + 7, classWithInfo.indexOf('ПАМЕТ: ') + 10);
-            gb = gb.replace(/\D/g, '');
+            gb = gb.replace(/\D/g, '').trim();
         }
 
         let weigth = '0';
         if (classWithInfo.includes('ТЕГЛО: ')) {
             weigth = classWithInfo.substring(classWithInfo.indexOf('ТЕГЛО: ') + 7, classWithInfo.indexOf('ТЕГЛО: ') + 11);
-            weigth = weigth.replace(/\D/g, '');
+            weigth = weigth.replace(/\D/g, '').trim();
         }
         console.log({
             make,
