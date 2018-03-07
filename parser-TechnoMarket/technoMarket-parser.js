@@ -1,25 +1,25 @@
 const {
-    JSDOM
-} = require("jsdom");
+    JSDOM,
+} = require('jsdom');
 
-const _ = require("lodash");
+const _ = require('lodash');
 
-const $init = require("jquery");
+const $init = require('jquery');
 
 const {
     getMake,
-    getModel
+    getModel,
 } = require('../takeInfo/getMakeAndModel.js');
 
 const getPagesUrlsTechnoMarket = async () => {
     const technopolisLink = 'https://www.technomarket.bg/product/filter?filter_form%5Bsort%5D=default&filter_form%5Bprice%5D%5Bmin%5D=39&filter_form%5Bprice%5D%5Bmax%5D=2649&filter_form%5Bspec_gsm_display%5D%5Bmin%5D=&filter_form%5Bspec_gsm_display%5D%5Bmax%5D=&filter_form%5Bspec_gsm_battery%5D%5Bmin%5D=&filter_form%5Bspec_gsm_battery%5D%5Bmax%5D=&filter_key=%2Ftelefoni%7Cstatic%7Cstatic&from=0&size=330';
     const dom = await JSDOM.fromURL(technopolisLink);
     const $ = $init(dom.window);
-    const pagesLinks = [...$(".paging a")].map((link) => {
-        const sublink = $(link).attr("href");
-        const fromIndex = sublink.indexOf("&page=") + "&page=".length;
-        const toIndex = sublink.indexOf("&", fromIndex + 1);
-        const page = sublink.substring(fromIndex, toIndex);
+    const pagesLinks = [...$('.paging a')].map((link) => {
+        // const sublink = $(link).attr('href');
+        // const fromIndex = sublink.indexOf('&page=') + '&page='.length;
+        // const toIndex = sublink.indexOf('&', fromIndex + 1);
+        // const page = sublink.substring(fromIndex, toIndex);
         return technopolisLink;
     });
 
@@ -29,11 +29,12 @@ const getPagesUrlsTechnoMarket = async () => {
 const getUrlsTechnoMarket = async () => {
     const pageUrls = await getPagesUrlsTechnoMarket();
 
-    const links = (await Promise.all(pageUrls.map((pageUrl) => JSDOM.fromURL(pageUrl))))
+    const links = (await Promise.all(pageUrls
+        .map((pageUrl) => JSDOM.fromURL(pageUrl))))
         .map((dom) => $init(dom.window))
-        .map(($) => [...$(".product a")]
+        .map(($) => [...$('.product a')]
             .map((link) => $(link)
-                .attr("href")));
+                .attr('href')));
 
     return _.chain(links)
         .flatten()
@@ -41,14 +42,13 @@ const getUrlsTechnoMarket = async () => {
         .value();
 };
 
-let runTehnoMarket = async () => {
-
-    let resultUrlsTechnoMarket = await getUrlsTechnoMarket();
+const runTehnoMarket = async () => {
+    const resultUrlsTechnoMarket = await getUrlsTechnoMarket();
 
     const chunkRequests = async (phoneArrObeject) => {
-        let chunkOfFive = resultUrlsTechnoMarket.splice(0, 5);
-        
-        if (chunkOfFive.length === 0){
+        const chunkOfFive = resultUrlsTechnoMarket.splice(0, 5);
+
+        if (chunkOfFive.length === 0) {
             return phoneArrObeject;
         }
 
@@ -57,26 +57,28 @@ let runTehnoMarket = async () => {
         })));
 
         return chunkRequests(phoneArrObeject);
-    }
+    };
 
     const currentPhone = async (currentUrl) => {
-        let url = 'https://www.technomarket.bg' + currentUrl;
+        const url = 'https://www.technomarket.bg' + currentUrl;
         const dom = await JSDOM.fromURL(url);
         const $ = $init(dom.window);
-        const classWithInfo = $(".moreLines").text();
+        const classWithInfo = $('.moreLines').text();
         // console.log(classWithInfo)
         const model = getModel(url, 37);
         const make = getMake(url, 37);
 
         let gb = '0';
         if (classWithInfo.includes('ПАМЕТ: ')) {
-            gb = classWithInfo.substring(classWithInfo.indexOf('ПАМЕТ: ') + 7, classWithInfo.indexOf('ПАМЕТ: ') + 10);
+            gb = classWithInfo.substring(classWithInfo
+                .indexOf('ПАМЕТ: ') + 7, classWithInfo.indexOf('ПАМЕТ: ') + 10);
             gb = gb.replace(/\D/g, '').trim();
         }
 
         let weigth = '0';
         if (classWithInfo.includes('ТЕГЛО: ')) {
-            weigth = classWithInfo.substring(classWithInfo.indexOf('ТЕГЛО: ') + 7, classWithInfo.indexOf('ТЕГЛО: ') + 11);
+            weigth = classWithInfo.substring(classWithInfo
+                .indexOf('ТЕГЛО: ') + 7, classWithInfo.indexOf('ТЕГЛО: ') + 11);
             weigth = weigth.replace(/\D/g, '').trim();
         }
         // console.log({
@@ -91,14 +93,14 @@ let runTehnoMarket = async () => {
             model,
             gb,
             weigth,
-            site:'technoMarket',
+            site: 'technoMarket',
         };
-    }
-    
+    };
+
     // console.log( chunkRequests([]));
     return chunkRequests([]);
-}
+};
 
 module.exports = {
-    runTehnoMarket
+    runTehnoMarket,
 };

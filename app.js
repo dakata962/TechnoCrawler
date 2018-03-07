@@ -1,24 +1,43 @@
 const {
-    runTehnoPolis
+    runTehnoPolis,
 } = require('./parser-TehnoPolis/technoPolis-parser.js');
 
 const {
-    runTehnoMarket
+    runTehnoMarket,
 } = require('./parser-TechnoMarket/technoMarket-parser.js');
 
-const main = async () => {
-    let arrObjTechnoMarket = await runTehnoMarket();
+const {
+    phones,
+} = require('./models');
 
-    arrObjTechnoMarket.forEach((element) => {
+
+const addObjectsToDB = (arr) => {
+    arr.forEach((element) => {
         element.forEach((el) => {
-            console.log(el);
-            console.log('-'.repeat(30))
-        })
+            phones.create({
+                make: el.make,
+                model: el.model,
+                gb: el.gb,
+                weigth: el.weigth,
+                site: el.site,
+            });
+        });
     });
+};
 
-    // let arrObjTechnoPolis= await runTehnoPolis();
-    //foreach .. 
-    //cykai bazata
-}
+const update = async () => {
+    console.log('\nStart crawler');
+    const arrObjTechnoMarket = await runTehnoMarket();
+    const arrObjTechnoPolis = await runTehnoPolis();
 
-main();
+    console.log('Adding data to DB');
+    addObjectsToDB(arrObjTechnoMarket);
+    addObjectsToDB(arrObjTechnoPolis);
+};
+
+process.argv.forEach((val, index, array) => {
+    if (val === 'update') {
+        // update();
+    }
+    console.log(val);
+});
