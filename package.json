@@ -1,7 +1,7 @@
 {
   "name": "Tehno-crawler",
-  "version": "0.1.0",
-  "main": "index.js",
+  "version": "1.0.0",
+  "main": "app.js",
   "license": "MIT",
   "dependencies": {
     "babel-eslint": "^8.2.2",

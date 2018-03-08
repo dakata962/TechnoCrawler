@@ -40,7 +40,7 @@ const update = async () => {
 program
     .command('update')
     .action(() => {
-        console.log('update()');
+        update();
     });
 
 program
@@ -52,30 +52,111 @@ program
         } else {
             argsArr = filter.split(':');
         }
-        console.log(argsArr);
+
+        // console.log(argsArr);
         if (argsArr[0] === 'filter') {
-            if (argsArr[1] === 'ram') {
+            if (argsArr[1] === 'gb') {
                 if (argsArr[2] === 'gt') {
-                    //
+                    const numberToSearch = +argsArr[3]
+                        .slice(0, argsArr[3].length - 2);
+                    // console.log(numberToSearch);
+                    phones.findAndCountAll({
+                        where: {
+                            gb: {
+                                gt: numberToSearch,
+                            },
+                        },
+                    }).then((obj) => {
+                        obj.rows.forEach((ob) => console.log(
+                            JSON.stringify(ob.make + ' ' +
+                                ob.model + ' gb: ' + ob.gb)));
+
+                        console.log('\nDisplayed rows: ' + obj.count);
+                    });
                 } else if (argsArr[2] === 'lt') {
-                    //
+                    const numberToSearch = +argsArr[3]
+                        .slice(0, argsArr[3].length - 2);
+                    // console.log(numberToSearch);
+                    phones.findAndCountAll({
+                        where: {
+                            gb: {
+                                lt: numberToSearch,
+                            },
+                        },
+                    }).then((obj) => {
+                        obj.rows.forEach((ob) => console.log(
+                            JSON.stringify(ob.make + ' ' +
+                                ob.model + ' gb: ' + ob.gb)));
+
+                        console.log('\nDisplayed rows: ' + obj.count);
+                    });
                 }
             } else if (argsArr[1] === 'weigth') {
                 if (argsArr[2] === 'gt') {
-                    //
+                    const numberToSearch = +argsArr[3]
+                        .slice(0, argsArr[3].length - 1);
+                    // console.log(numberToSearch);
+                    phones.findAndCountAll({
+                        where: {
+                            weigth: {
+                                gt: numberToSearch,
+                            },
+                        },
+                    }).then((obj) => {
+                        obj.rows.forEach((ob) =>
+                            console.log(JSON.stringify(ob.make + ' ' +
+                                ob.model + ' weigth: ' + ob.weigth)));
+
+                        console.log('\nDisplayed rows: ' + obj.count);
+                    });
                 } else if (argsArr[2] === 'lt') {
-                    //
+                    const numberToSearch = +argsArr[3]
+                        .slice(0, argsArr[3].length - 1);
+                    // console.log(numberToSearch);
+                    phones.findAndCountAll({
+                        where: {
+                            weigth: {
+                                lt: numberToSearch,
+                            },
+                        },
+                    }).then((obj) => {
+                        obj.rows.forEach((ob) => console.log(
+                            JSON.stringify(ob.make + ' ' +
+                                ob.model + ' weigth: ' + ob.weigth)));
+                        console.log('\nDisplayed rows: ' + obj.count);
+                    });
                 }
             }
         } else if (argsArr[0] === 'search') {
-            //search argsArr[1] make/model
+            // search argsArr[1] make/model
+            console.log(argsArr[1]);
+            if (argsArr[1] === 'make') {
+                phones.findAndCountAll({
+                    where: {
+                        make: argsArr[2],
+                    },
+                }).then((obj) => {
+                    obj.rows.forEach((ob) =>
+                        console.log(JSON.stringify(ob.make + ' ' +
+                            ob.model)));
 
-        } //order by make
-        else if (argsArr[0] === 'order') {
+                    console.log('\nDisplayed rows: ' + obj.count);
+                });
+            }
+        } else if (argsArr[0] === 'order') {
             if (argsArr[2] === 'make') {
-                //
-            } else if (argsArr[2] === 'weigth') {
-                //
+                phones.findAndCountAll({
+                    order: [
+                        ['make', 'ASC'],
+                        ['model', 'ASC'],
+                    ],
+                }).then((obj) => {
+                    obj.rows.forEach((ob) =>
+                        console.log(JSON.stringify(ob.make + ' ' +
+                            ob.model)));
+
+                    console.log('\nDisplayed rows: ' + obj.count);
+                });
             }
         }
     });
