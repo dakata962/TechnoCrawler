@@ -1,3 +1,9 @@
+const program = require('commander');
+
+const {
+    phones,
+} = require('./models');
+
 const {
     runTehnoPolis,
 } = require('./parser-TehnoPolis/technoPolis-parser.js');
@@ -5,10 +11,6 @@ const {
 const {
     runTehnoMarket,
 } = require('./parser-TechnoMarket/technoMarket-parser.js');
-
-const {
-    phones,
-} = require('./models');
 
 
 const addObjectsToDB = (arr) => {
@@ -35,9 +37,46 @@ const update = async () => {
     addObjectsToDB(arrObjTechnoPolis);
 };
 
-process.argv.forEach((val, index, array) => {
-    if (val === 'update') {
-        // update();
-    }
-    console.log(val);
-});
+program
+    .command('update')
+    .action(() => {
+        console.log('update()');
+    });
+
+program
+    .command('statistics <filter>')
+    .action((filter) => {
+        let argsArr;
+        if (filter.includes('-')) {
+            argsArr = filter.split('-');
+        } else {
+            argsArr = filter.split(':');
+        }
+        console.log(argsArr);
+        if (argsArr[0] === 'filter') {
+            if (argsArr[1] === 'ram') {
+                if (argsArr[2] === 'gt') {
+                    //
+                } else if (argsArr[2] === 'lt') {
+                    //
+                }
+            } else if (argsArr[1] === 'weigth') {
+                if (argsArr[2] === 'gt') {
+                    //
+                } else if (argsArr[2] === 'lt') {
+                    //
+                }
+            }
+        } else if (argsArr[0] === 'search') {
+            //search argsArr[1] make/model
+
+        } //order by make
+        else if (argsArr[0] === 'order') {
+            if (argsArr[2] === 'make') {
+                //
+            } else if (argsArr[2] === 'weigth') {
+                //
+            }
+        }
+    });
+program.parse(process.argv);
