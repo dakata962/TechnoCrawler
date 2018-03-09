@@ -1,3 +1,4 @@
+/* global process */
 const program = require('commander');
 
 const {
@@ -158,6 +159,8 @@ program
                     console.log('\nDisplayed rows: ' + obj.count);
                 });
             }
+        } else {
+            console.log('\nSupported commands are: filter, search and order');
         }
     });
 program.parse(process.argv);
