@@ -30,7 +30,7 @@ const getUrlsTechnoMarket = async () => {
     const pageUrls = await getPagesUrlsTechnoMarket();
 
     const links = (await Promise.all(pageUrls
-        .map((pageUrl) => JSDOM.fromURL(pageUrl))))
+            .map((pageUrl) => JSDOM.fromURL(pageUrl))))
         .map((dom) => $init(dom.window))
         .map(($) => [...$('.product a')]
             .map((link) => $(link)
@@ -45,9 +45,17 @@ const getUrlsTechnoMarket = async () => {
 const runTehnoMarket = async () => {
     const resultUrlsTechnoMarket = await getUrlsTechnoMarket();
 
-    const chunkRequests = async (phoneArrObeject) => {
-        const chunkOfFive = resultUrlsTechnoMarket.splice(0, 5);
+    const sleep=(miliseconds)=> {
+        const currentTime = new Date().getTime();
 
+        while (currentTime + miliseconds >= new Date().getTime()) {
+            // I love es-lint :)
+        }
+    };
+
+    const chunkRequests = async (phoneArrObeject) => {
+        sleep(100);
+        const chunkOfFive = resultUrlsTechnoMarket.splice(0, 5);
         if (chunkOfFive.length === 0) {
             return phoneArrObeject;
         }
@@ -55,7 +63,6 @@ const runTehnoMarket = async () => {
         phoneArrObeject.push(await Promise.all(chunkOfFive.map((url) => {
             return currentPhone(url);
         })));
-
         return chunkRequests(phoneArrObeject);
     };
 
@@ -64,7 +71,8 @@ const runTehnoMarket = async () => {
         const dom = await JSDOM.fromURL(url);
         const $ = $init(dom.window);
         const classWithInfo = $('.moreLines').text();
-        // console.log(classWithInfo)
+        let price = $('.price span').first().text();
+        price = +price.substr(0, price.length - 5);
         const model = getModel(url, 37);
         const make = getMake(url, 37);
 
@@ -93,6 +101,7 @@ const runTehnoMarket = async () => {
             model,
             gb,
             weigth,
+            price,
             site: 'technoMarket',
         };
     };

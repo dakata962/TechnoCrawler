@@ -22,6 +22,7 @@ const addObjectsToDB = (arr) => {
                 model: el.model,
                 gb: el.gb,
                 weigth: el.weigth,
+                price: el.price,
                 site: el.site,
             });
         });
@@ -127,10 +128,45 @@ program
                         console.log('\nDisplayed rows: ' + obj.count);
                     });
                 }
+            } else if (argsArr[1] === 'price') {
+                if (argsArr[2] === 'gt') {
+                    const numberToSearch = +argsArr[3]
+                        .slice(0, argsArr[3].length - 2);
+                    // console.log(numberToSearch);
+                    phones.findAndCountAll({
+                        where: {
+                            price: {
+                                gt: numberToSearch,
+                            },
+                        },
+                    }).then((obj) => {
+                        obj.rows.forEach((ob) =>
+                            console.log(JSON.stringify(ob.make + ' ' +
+                                ob.model + ' price: ' + ob.price)));
+
+                        console.log('\nDisplayed rows: ' + obj.count);
+                    });
+                } else if (argsArr[2] === 'lt') {
+                    const numberToSearch = +argsArr[3]
+                        .slice(0, argsArr[3].length - 2);
+                    // console.log(numberToSearch);
+                    phones.findAndCountAll({
+                        where: {
+                            price: {
+                                lt: numberToSearch,
+                            },
+                        },
+                    }).then((obj) => {
+                        obj.rows.forEach((ob) => console.log(
+                            JSON.stringify(ob.make + ' ' +
+                                ob.model + ' price: ' + ob.price)));
+                        console.log('\nDisplayed rows: ' + obj.count);
+                    });
+                }
             }
         } else if (argsArr[0] === 'search') {
             // search argsArr[1] make/model
-            console.log(argsArr[1]);
+            // console.log(argsArr[1]);
             if (argsArr[1] === 'make') {
                 phones.findAndCountAll({
                     where: {
@@ -139,7 +175,7 @@ program
                 }).then((obj) => {
                     obj.rows.forEach((ob) =>
                         console.log(JSON.stringify(ob.make + ' ' +
-                            ob.model)));
+                            ob.model + ' site: ' + ob.site)));
 
                     console.log('\nDisplayed rows: ' + obj.count);
                 });
@@ -155,6 +191,20 @@ program
                     obj.rows.forEach((ob) =>
                         console.log(JSON.stringify(ob.make + ' ' +
                             ob.model)));
+
+                    console.log('\nDisplayed rows: ' + obj.count);
+                });
+            } else if (argsArr[2] === 'price') {
+                phones.findAndCountAll({
+                    order: [
+                        ['price', 'ASC'],
+                        ['make', 'ASC'],
+                        ['model', 'ASC'],
+                    ],
+                }).then((obj) => {
+                    obj.rows.forEach((ob) =>
+                        console.log(JSON.stringify(ob.make + ' ' +
+                            ob.model + ' price: ' + ob.price)));
 
                     console.log('\nDisplayed rows: ' + obj.count);
                 });

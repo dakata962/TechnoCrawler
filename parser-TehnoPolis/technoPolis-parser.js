@@ -45,7 +45,16 @@ const getUrlsTechnoPolis = async () => {
 const runTehnoPolis = async () => {
     const resultUrlsTechnoPolis = await getUrlsTechnoPolis();
 
+    const sleep=(miliseconds)=> {
+        const currentTime = new Date().getTime();
+
+        while (currentTime + miliseconds >= new Date().getTime()) {
+            // I love es-lint :)
+        }
+    };
+
     const chunkRequests = async (phoneArrObeject) => {
+        sleep(100);
         const chunkOfFive = resultUrlsTechnoPolis.splice(0, 5);
 
         if (chunkOfFive.length === 0) {
@@ -64,6 +73,9 @@ const runTehnoPolis = async () => {
         const dom = await JSDOM.fromURL(url);
         const $ = $init(dom.window);
         const classWithInfo = $('td').text();
+        const price = +$('.price .priceValue').first().text()
+        .replace(/\s/g, '');
+        // console.log(classWithInfo);
         let weigth = '0';
         if (classWithInfo.includes('ТЕГЛО')) {
             weigth = classWithInfo.substring(classWithInfo
@@ -96,6 +108,7 @@ const runTehnoPolis = async () => {
             model,
             gb,
             weigth,
+            price,
             site: 'technoPolis',
         };
     };

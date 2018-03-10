@@ -1,6 +1,6 @@
 /* jshint indent: 2 */
 
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
   return sequelize.define('phones', {
     id: {
       type: DataTypes.INTEGER(11),
@@ -27,6 +27,10 @@ module.exports = function(sequelize, DataTypes) {
     },
     weigth: {
       type: DataTypes.INTEGER(11),
+      allowNull: true,
+    },
+    price: {
+      type: DataTypes.FLOAT(11),
       allowNull: true,
     },
   }, {
